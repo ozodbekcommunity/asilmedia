@@ -1,53 +1,39 @@
 <!DOCTYPE html>
-<html lang="uz" class="scroll-smooth">
+<html lang="uz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CinePro - Tarjima Filmlar va Seriallar</title>
+    <title>AsilMedia - Eng so'nggi kinolar va seriallar</title>
     
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Plus Jakarta Sans Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Lalezar&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                    },
                     colors: {
                         brand: {
-                            DEFAULT: '#E50914', // Premium Red
-                            hover: '#C11119',
-                            glow: 'rgba(229, 9, 20, 0.4)'
+                            DEFAULT: '#e50914', // Netflix red style
+                            dark: '#b20710',
+                            light: '#ff2c36'
                         },
                         dark: {
-                            bg: '#09090b', // Zinc 950
-                            card: '#18181b', // Zinc 900
-                            hover: '#27272a', // Zinc 800
-                            border: '#3f3f46' // Zinc 700
+                            900: '#0f0f0f',
+                            800: '#1a1a1a',
+                            700: '#2a2a2a'
                         }
                     },
-                    animation: {
-                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'slide-up': 'slideUp 0.4s ease-out forwards',
-                        'fade-in': 'fadeIn 0.3s ease-out forwards',
-                    },
-                    keyframes: {
-                        slideUp: {
-                            '0%': { opacity: '0', transform: 'translateY(20px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        },
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        }
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        lalezar: ['Lalezar', 'sans-serif']
                     }
                 }
             }
@@ -56,465 +42,418 @@
 
     <style>
         body {
-            background-color: #09090b;
-            color: #f4f4f5;
+            background-color: #0f0f0f;
+            color: #ffffff;
             overflow-x: hidden;
         }
 
-        /* Smooth Hide Scrollbar */
-        .no-scrollbar::-webkit-scrollbar {
+        /* Hide Scrollbar for horizontal scrolling */
+        .hide-scrollbar::-webkit-scrollbar {
             display: none;
         }
-        .no-scrollbar {
+        .hide-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
 
-        /* Custom Scrollbar for Page */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #09090b;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #3f3f46;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #E50914;
+        /* Hero Gradient */
+        .hero-gradient {
+            background: linear-gradient(0deg, rgba(15,15,15,1) 0%, rgba(15,15,15,0.4) 50%, rgba(15,15,15,0.8) 100%);
         }
 
-        /* Glassmorphism Navbar */
-        .nav-glass {
-            background: rgba(9, 9, 11, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        /* Hero Gradient Fade */
-        .hero-mask {
-            background: linear-gradient(0deg, #09090b 0%, rgba(9,9,11,0.5) 50%, rgba(9,9,11,0.1) 100%);
-        }
-
-        /* Movie Card Hover Architecture */
+        /* Card Hover Effects */
         .movie-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .movie-card:hover {
-            transform: translateY(-8px) scale(1.02);
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
             z-index: 10;
         }
-        .movie-info-overlay {
-            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
+        .play-overlay {
             opacity: 0;
             transition: opacity 0.3s ease;
         }
-        .movie-card:hover .movie-info-overlay {
+        .movie-card:hover .play-overlay {
             opacity: 1;
         }
 
-        /* Category Chips Active State */
-        .category-chip.active {
-            background-color: #f4f4f5;
-            color: #09090b;
-            border-color: #f4f4f5;
+        /* Custom Video Player Styles */
+        .video-container {
+            position: relative;
+            width: 100%;
+            background: #000;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 20px 15px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .video-container:hover .video-controls {
+            opacity: 1;
+        }
+        .progress-bar-container {
+            width: 100%;
+            height: 5px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #e50914;
+            border-radius: 5px;
+            width: 0%;
+        }
+        .progress-thumb {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border-radius: 50%;
+            margin-left: -6px;
+            display: none;
+        }
+        .progress-bar-container:hover .progress-thumb {
+            display: block;
+        }
+        
+        /* Modal Animation */
+        .modal-enter {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        /* Video Player Range Slider Customization */
-        input[type=range] {
-            -webkit-appearance: none;
-            background: transparent;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 12px;
-            width: 12px;
+        /* Loader */
+        .loader {
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top: 4px solid #e50914;
             border-radius: 50%;
-            background: #E50914;
-            cursor: pointer;
-            margin-top: -4px;
-            box-shadow: 0 0 10px rgba(229, 9, 20, 0.5);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
         }
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 4px;
-            cursor: pointer;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 2px;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
-<body class="antialiased selection:bg-brand selection:text-white">
+<body class="font-sans antialiased selection:bg-brand selection:text-white">
 
-    <nav class="fixed top-0 w-full z-50 transition-all duration-300 nav-glass" id="navbar">
-        <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
-                
-                <!-- Logo & Primary Links -->
-                <div class="flex items-center gap-8">
-                    <a href="#" onclick="goHome()" class="flex items-center gap-2 group">
-                        <div class="w-10 h-10 bg-brand rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(229,9,20,0.4)] group-hover:shadow-[0_0_25px_rgba(229,9,20,0.6)] transition-all">
-                            <i class="fas fa-play text-white text-lg ml-1"></i>
-                        </div>
-                        <span class="font-extrabold text-2xl tracking-tight text-white">Cine<span class="text-brand">Pro</span></span>
-                    </a>
-                    
-                    <div class="hidden lg:flex items-center gap-6">
-                        <a href="#" class="text-white font-medium hover:text-brand transition-colors">Bosh sahifa</a>
-                        <a href="#" class="text-gray-400 font-medium hover:text-white transition-colors">Kino</a>
-                        <a href="#" class="text-gray-400 font-medium hover:text-white transition-colors">Serial</a>
-                        <a href="#" class="text-gray-400 font-medium hover:text-white transition-colors">Kolleksiyalar</a>
-                    </div>
+    <nav class="fixed top-0 w-full z-50 transition-all duration-300 bg-dark-900/90 backdrop-blur-md border-b border-white/5" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 cursor-pointer" onclick="goHome()">
+                    <span class="font-lalezar text-3xl sm:text-4xl text-brand tracking-wide">ASIL<span class="text-white">MEDIA</span></span>
                 </div>
 
-                <!-- Search & Actions -->
-                <div class="flex items-center gap-4 sm:gap-6">
-                    <!-- Search Bar -->
-                    <div class="relative group hidden sm:block">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <i class="fas fa-search text-gray-400 group-focus-within:text-brand transition-colors"></i>
-                        </div>
-                        <input type="text" id="searchInput" placeholder="Kino, serial qidirish..." 
-                            class="bg-dark-card border border-dark-border text-white text-sm rounded-full focus:ring-1 focus:ring-brand focus:border-brand block w-full pl-10 p-2.5 w-[200px] lg:w-[280px] transition-all placeholder-gray-500">
-                    </div>
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-6 lg:space-x-8">
+                    <a href="#" class="text-white hover:text-brand transition font-medium">Bosh sahifa</a>
+                    <a href="#" class="text-gray-300 hover:text-white transition font-medium">Kinolar</a>
+                    <a href="#" class="text-gray-300 hover:text-white transition font-medium">Seriallar</a>
+                    <a href="#" class="text-gray-300 hover:text-white transition font-medium">Kolleksiyalar</a>
+                </div>
 
-                    <!-- Mobile Search Toggle -->
-                    <button class="sm:hidden text-gray-400 hover:text-white transition-colors" onclick="toggleMobileSearch()">
+                <!-- Search and Profile -->
+                <div class="flex items-center space-x-4">
+                    <div class="relative hidden sm:block">
+                        <input type="text" id="searchInput" placeholder="Kino qidirish..." class="bg-dark-800 text-sm text-white rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand border border-gray-700 w-48 lg:w-64 transition-all">
+                        <i class="fas fa-search absolute left-3.5 top-2.5 text-gray-400"></i>
+                    </div>
+                    <button class="sm:hidden text-gray-300 hover:text-white" onclick="toggleMobileSearch()">
                         <i class="fas fa-search text-xl"></i>
                     </button>
-
-                    <!-- Notifications -->
-                    <button class="text-gray-400 hover:text-white transition-colors relative">
+                    <button class="text-gray-300 hover:text-white">
                         <i class="fas fa-bell text-xl"></i>
-                        <span class="absolute top-0 right-0 w-2 h-2 bg-brand rounded-full border border-dark-bg"></span>
                     </button>
-
-                    <!-- User Profile -->
-                    <div class="w-10 h-10 rounded-full border-2 border-dark-border overflow-hidden cursor-pointer hover:border-brand transition-colors">
-                        <img src="https://placehold.co/100x100/18181b/ffffff?text=U" alt="User" class="w-full h-full object-cover">
+                    <div class="h-8 w-8 rounded-full bg-brand flex items-center justify-center font-bold cursor-pointer">
+                        A
                     </div>
                 </div>
             </div>
-
-            <!-- Mobile Search Bar -->
-            <div id="mobileSearchContainer" class="hidden pb-4 sm:hidden animate-fade-in">
+            <!-- Mobile Search Bar (hidden by default) -->
+            <div id="mobileSearch" class="hidden pb-4 sm:hidden">
                 <div class="relative">
-                    <input type="text" id="mobileSearchInput" placeholder="Nima ko'ramiz?" class="bg-dark-card border border-dark-border text-white text-sm rounded-xl focus:ring-1 focus:ring-brand w-full p-3 pl-10">
-                    <i class="fas fa-search absolute left-4 top-3.5 text-gray-400"></i>
+                    <input type="text" id="mobileSearchInput" placeholder="Kino qidirish..." class="bg-dark-800 w-full text-sm text-white rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand border border-gray-700">
+                    <i class="fas fa-search absolute left-3.5 top-2.5 text-gray-400"></i>
                 </div>
             </div>
         </div>
     </nav>
 
-    <section class="relative w-full h-[70vh] lg:h-[85vh] flex items-end pb-20 pt-32">
-        <!-- Hero Background -->
+    <header class="relative w-full h-[60vh] sm:h-[80vh] flex items-center" id="heroSection">
         <div class="absolute inset-0 z-0">
-            <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" 
-                 alt="Featured Movie" class="w-full h-full object-cover opacity-60">
-            <div class="absolute inset-0 hero-mask"></div>
-            <!-- Radial glow for extra premium feel -->
-            <div class="absolute top-1/4 right-1/4 w-[40vw] h-[40vw] bg-brand/10 rounded-full blur-[120px] pointer-events-none"></div>
+            <!-- Background Image -->
+            <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1925&q=80" alt="Hero Background" class="w-full h-full object-cover">
+            <div class="absolute inset-0 hero-gradient"></div>
         </div>
-
-        <div class="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
-            <div class="max-w-3xl">
-                <div class="flex items-center gap-3 mb-4 animate-slide-up" style="animation-delay: 0.1s;">
-                    <span class="bg-brand text-white text-xs font-bold px-2 py-1 rounded">PREMYERA 2026</span>
-                    <span class="text-gray-300 text-sm font-medium flex items-center gap-1"><i class="fas fa-star text-yellow-500 text-xs"></i> 8.9</span>
-                    <span class="text-gray-300 text-sm font-medium border border-gray-600 px-2 rounded">4K UHD</span>
-                </div>
-                
-                <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-white mb-4 leading-tight tracking-tight animate-slide-up" style="animation-delay: 0.2s;">
-                    O'zbek Tilidagi <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">Eng Sara Filmlar</span>
-                </h1>
-                
-                <p class="text-gray-400 text-lg mb-8 line-clamp-3 animate-slide-up max-w-2xl" style="animation-delay: 0.3s;">
-                    Siz qidirgan barcha tarjima kinolar, seriallar va multfilmlar yuqori sifatda, qotmasdan va mutlaqo bepul. Hozir qidiruvni boshlang yoki tavsiyalardan birini tanlang.
-                </p>
-                
-                <div class="flex flex-wrap gap-4 animate-slide-up" style="animation-delay: 0.4s;">
-                    <button onclick="document.getElementById('searchInput').focus()" class="bg-white text-black hover:bg-gray-200 px-8 py-3.5 rounded-full font-bold transition-all flex items-center gap-2 text-lg">
-                        <i class="fas fa-search"></i> Qidirish
-                    </button>
-                    <button class="bg-dark-hover border border-dark-border text-white hover:bg-dark-border px-8 py-3.5 rounded-full font-bold transition-all flex items-center gap-2 text-lg">
-                        <i class="fas fa-info-circle"></i> Batafsil
-                    </button>
-                </div>
+        
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-16">
+            <h1 class="font-lalezar text-5xl sm:text-7xl lg:text-8xl text-white mb-2 leading-none drop-shadow-lg">2026 PREMYERALAR</h1>
+            <p class="text-lg sm:text-xl text-gray-300 max-w-2xl mb-6 font-light drop-shadow-md">
+                Eng yangi, shov-shuvli blokbasterlar va kutilgan filmlar faqat AsilMedia'da. Yuqori sifat va tezkor yuklash imkoniyati bilan bepul tomosha qiling.
+            </p>
+            <div class="flex flex-wrap gap-4">
+                <button class="bg-brand hover:bg-brand-dark text-white px-8 py-3 rounded-full font-bold transition-all flex items-center gap-2 transform hover:scale-105 shadow-[0_0_15px_rgba(229,9,20,0.5)]">
+                    <i class="fas fa-play"></i> Hozir ko'rish
+                </button>
+                <button class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-8 py-3 rounded-full font-bold transition-all flex items-center gap-2">
+                    <i class="fas fa-info-circle"></i> Batafsil
+                </button>
             </div>
         </div>
-    </section>
+    </header>
 
-    <section class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-20">
-        <div class="flex items-center gap-3 overflow-x-auto no-scrollbar py-2">
-            <button class="category-chip active flex-shrink-0 px-6 py-2 rounded-full border border-dark-border font-medium text-sm transition-all" onclick="setCategory(this, 'Tarjima')">Tarjima filmlar</button>
-            <button class="category-chip bg-dark-card text-gray-300 hover:text-white flex-shrink-0 px-6 py-2 rounded-full border border-dark-border font-medium text-sm transition-all" onclick="setCategory(this, 'Jangari')">Jangari</button>
-            <button class="category-chip bg-dark-card text-gray-300 hover:text-white flex-shrink-0 px-6 py-2 rounded-full border border-dark-border font-medium text-sm transition-all" onclick="setCategory(this, 'Komediya')">Komediya</button>
-            <button class="category-chip bg-dark-card text-gray-300 hover:text-white flex-shrink-0 px-6 py-2 rounded-full border border-dark-border font-medium text-sm transition-all" onclick="setCategory(this, 'Fantastika')">Fantastika</button>
-            <button class="category-chip bg-dark-card text-gray-300 hover:text-white flex-shrink-0 px-6 py-2 rounded-full border border-dark-border font-medium text-sm transition-all" onclick="setCategory(this, 'Drama')">Drama</button>
-            <button class="category-chip bg-dark-card text-gray-300 hover:text-white flex-shrink-0 px-6 py-2 rounded-full border border-dark-border font-medium text-sm transition-all" onclick="setCategory(this, 'Sarguzasht')">Sarguzasht</button>
-            <button class="category-chip bg-dark-card text-gray-300 hover:text-white flex-shrink-0 px-6 py-2 rounded-full border border-dark-border font-medium text-sm transition-all" onclick="setCategory(this, 'Hind')">Hind</button>
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 mb-4 relative z-20">
+        <div class="flex items-center justify-between mb-2">
+            <h2 class="font-lalezar text-2xl tracking-wide">Janrlar</h2>
+        </div>
+        <div class="flex space-x-3 overflow-x-auto hide-scrollbar py-2">
+            <!-- Genres -->
+            <button class="whitespace-nowrap px-5 py-1.5 rounded-full bg-dark-800 hover:bg-brand border border-gray-700 hover:border-brand transition-colors text-sm font-medium" onclick="filterGenre('Barchasi')">Barchasi</button>
+            <button class="whitespace-nowrap px-5 py-1.5 rounded-full bg-dark-800 hover:bg-brand border border-gray-700 hover:border-brand transition-colors text-sm font-medium" onclick="filterGenre('Jangari')">Jangari</button>
+            <button class="whitespace-nowrap px-5 py-1.5 rounded-full bg-dark-800 hover:bg-brand border border-gray-700 hover:border-brand transition-colors text-sm font-medium" onclick="filterGenre('Komediya')">Komediya</button>
+            <button class="whitespace-nowrap px-5 py-1.5 rounded-full bg-dark-800 hover:bg-brand border border-gray-700 hover:border-brand transition-colors text-sm font-medium" onclick="filterGenre('Fantastika')">Fantastika</button>
+            <button class="whitespace-nowrap px-5 py-1.5 rounded-full bg-dark-800 hover:bg-brand border border-gray-700 hover:border-brand transition-colors text-sm font-medium" onclick="filterGenre('Drama')">Drama</button>
+            <button class="whitespace-nowrap px-5 py-1.5 rounded-full bg-dark-800 hover:bg-brand border border-gray-700 hover:border-brand transition-colors text-sm font-medium" onclick="filterGenre('Sarguzasht')">Sarguzasht</button>
+            <button class="whitespace-nowrap px-5 py-1.5 rounded-full bg-dark-800 hover:bg-brand border border-gray-700 hover:border-brand transition-colors text-sm font-medium" onclick="filterGenre('Triller')">Triller</button>
+            <button class="whitespace-nowrap px-5 py-1.5 rounded-full bg-dark-800 hover:bg-brand border border-gray-700 hover:border-brand transition-colors text-sm font-medium" onclick="filterGenre('Ujas')">Dahshatli</button>
         </div>
     </section>
 
-    <main class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10 min-h-[50vh]">
-        
-        <div class="flex items-center justify-between mb-8">
-            <h2 id="sectionTitle" class="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
-                Eng so'nggi tarjima filmlar
-                <i class="fas fa-chevron-right text-brand text-sm mt-1"></i>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-[50vh]">
+        <div class="flex items-center justify-between mb-6">
+            <h2 id="sectionTitle" class="font-lalezar text-3xl tracking-wide flex items-center gap-2">
+                <span class="w-1.5 h-8 bg-brand rounded-full inline-block"></span> Natijalar: 2026
             </h2>
         </div>
 
-        <!-- Skeleton Loaders (Shown during fetch) -->
-        <div id="skeletonGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
-            <!-- Skeletons generated by JS -->
+        <!-- Loader -->
+        <div id="loadingIndicator" class="hidden flex-col items-center justify-center py-20 w-full">
+            <div class="loader mb-4"></div>
+            <p class="text-gray-400 font-medium">Kinolar qidirilmoqda...</p>
         </div>
 
         <!-- Movies Grid -->
-        <div id="moviesGrid" class="hidden grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
-            <!-- Movies injected here -->
+        <div id="moviesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
+            <!-- JavaScript will populate this -->
         </div>
 
-        <!-- No Results -->
-        <div id="noResults" class="hidden flex flex-col items-center justify-center py-20 text-center">
-            <div class="w-24 h-24 bg-dark-card rounded-full flex items-center justify-center mb-6 border border-dark-border">
-                <i class="fas fa-film text-4xl text-gray-500"></i>
-            </div>
-            <h3 class="text-2xl font-bold text-white mb-2">Kinolar topilmadi</h3>
-            <p class="text-gray-400 max-w-md">Kechirasiz, so'rovingiz bo'yicha hech narsa topa olmadik. Boshqa nom yoki janr bilan qidirib ko'ring.</p>
+        <!-- No Results Message -->
+        <div id="noResults" class="hidden text-center py-20">
+            <i class="fas fa-film text-6xl text-gray-700 mb-4"></i>
+            <h3 class="text-2xl font-lalezar text-gray-400">Hech narsa topilmadi</h3>
+            <p class="text-gray-500 mt-2">Boshqa nom bilan qidirib ko'ring.</p>
         </div>
-
     </main>
 
-    <footer class="bg-dark-card border-t border-dark-border mt-10">
-        <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-                <div>
-                    <a href="#" class="flex items-center gap-2 group mb-4">
-                        <div class="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
-                            <i class="fas fa-play text-white text-sm ml-0.5"></i>
-                        </div>
-                        <span class="font-extrabold text-xl tracking-tight text-white">Cine<span class="text-brand">Pro</span></span>
-                    </a>
-                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm">
-                        O'zbekistonning eng zamonaviy kino va seriallar platformasi. Barcha filmlar yuqori sifatda va bepul.
-                    </p>
+    <footer class="bg-dark-900 border-t border-white/5 py-10 mt-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-2">
+                    <span class="font-lalezar text-3xl text-brand tracking-wide">ASIL<span class="text-white">MEDIA</span></span>
                 </div>
-                <div class="flex flex-col gap-3">
-                    <h4 class="text-white font-bold mb-2">Platforma</h4>
-                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Bosh sahifa</a>
-                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Tarjima kinolar</a>
-                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Top Seriallar</a>
-                </div>
-                <div class="flex flex-col gap-3">
-                    <h4 class="text-white font-bold mb-2">Bizga qo'shiling</h4>
-                    <div class="flex gap-4">
-                        <a href="#" class="w-10 h-10 bg-dark-bg rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-brand transition-all">
-                            <i class="fab fa-telegram-plane"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-dark-bg rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-brand transition-all">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-dark-bg rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-brand transition-all">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                    </div>
+                <div class="flex gap-4">
+                    <a href="#" class="w-10 h-10 rounded-full bg-dark-800 flex items-center justify-center hover:bg-brand transition-colors text-white"><i class="fab fa-telegram-plane"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-dark-800 flex items-center justify-center hover:bg-brand transition-colors text-white"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-dark-800 flex items-center justify-center hover:bg-brand transition-colors text-white"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
-            <div class="pt-8 border-t border-dark-border text-center sm:text-left flex flex-col sm:flex-row justify-between items-center gap-4">
-                <p class="text-gray-500 text-sm">&copy; 2026 CinePro. Barcha huquqlar himoyalangan.</p>
-                <div class="flex gap-4 text-sm text-gray-500">
-                    <a href="#" class="hover:text-white transition-colors">Maxfiylik siyosati</a>
-                    <a href="#" class="hover:text-white transition-colors">Qoidalar</a>
-                </div>
+            <div class="text-center md:text-left text-gray-500 text-sm mt-8">
+                &copy; 2026 AsilMedia API Demo. Ushbu sayt ta'lim va ko'rgazma maqsadida yaratilgan.
             </div>
         </div>
     </footer>
 
-    <div id="videoModal" class="fixed inset-0 z-[100] bg-black/95 hidden backdrop-blur-xl transition-opacity">
-        <div class="w-full h-full flex flex-col xl:flex-row">
+    <div id="videoModal" class="fixed inset-0 z-[100] bg-black/95 hidden backdrop-blur-sm flex items-center justify-center overflow-y-auto pt-10 pb-10">
+        <div class="modal-enter w-full max-w-5xl mx-auto px-4 relative flex flex-col">
             
-            <!-- Left Side: Player -->
-            <div class="w-full xl:w-[75%] h-[40vh] sm:h-[60vh] xl:h-full bg-black relative flex flex-col justify-center animate-fade-in group" id="playerWrapper">
-                
-                <!-- Close Button (Mobile/Tablet top left) -->
-                <button onclick="closeModal()" class="absolute top-4 left-4 z-50 w-10 h-10 bg-black/50 hover:bg-brand text-white rounded-full flex items-center justify-center transition-colors">
-                    <i class="fas fa-arrow-left"></i>
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="modalMovieTitle" class="font-lalezar text-2xl sm:text-3xl text-white truncate max-w-[80%]">Kino Nomi</h2>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-brand transition-colors p-2 bg-dark-800 rounded-full w-10 h-10 flex items-center justify-center">
+                    <i class="fas fa-times text-xl"></i>
                 </button>
+            </div>
 
-                <!-- Loading State for Video -->
-                <div id="videoLoader" class="absolute inset-0 flex flex-col items-center justify-center bg-black z-40">
-                    <div class="w-12 h-12 border-4 border-dark-border border-t-brand rounded-full animate-spin mb-4"></div>
-                    <p class="text-gray-400 font-medium animate-pulse">Video tayyorlanmoqda...</p>
-                </div>
-
-                <!-- Video Elements -->
-                <video id="customVideo" class="w-full max-h-full object-contain hidden" poster="">
+            <!-- Custom Video Player UI -->
+            <div class="video-container group bg-black shadow-2xl relative aspect-video flex items-center justify-center" id="playerWrapper">
+                <!-- Video Element -->
+                <video id="customVideo" class="w-full h-full object-contain" poster="" preload="metadata">
                     <source src="" type="video/mp4">
+                    Brauzeringiz videoni qo'llab quvvatlamaydi.
                 </video>
-                <iframe id="iframePlayer" class="w-full h-full border-0 hidden" allowfullscreen allow="autoplay; fullscreen"></iframe>
-
-                <!-- Custom Center Play Button -->
-                <button id="centerPlayBtn" class="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/10 transition z-30 hidden">
-                    <div class="w-20 h-20 bg-brand/90 backdrop-blur rounded-full flex items-center justify-center text-white pl-1.5 shadow-[0_0_30px_rgba(229,9,20,0.5)] transform hover:scale-110 transition duration-300">
+                
+                <!-- Iframe Player (for when mp4 is not available) -->
+                <iframe id="iframePlayer" class="w-full h-full hidden border-0" allowfullscreen allow="autoplay; fullscreen"></iframe>
+                
+                <!-- Big Play Button Center (Visible when paused) -->
+                <button id="centerPlayBtn" class="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/10 transition z-10">
+                    <div class="w-20 h-20 bg-brand/90 rounded-full flex items-center justify-center text-white pl-1.5 shadow-[0_0_20px_rgba(229,9,20,0.6)] transform group-hover:scale-110 transition">
                         <i class="fas fa-play text-3xl"></i>
                     </div>
                 </button>
 
-                <!-- Custom Player Controls (Bottom Bar) -->
-                <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-black/80 to-transparent pt-16 pb-4 px-4 sm:px-8 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden" id="videoControls">
-                    
-                    <!-- Progress Bar -->
-                    <div class="flex items-center gap-3 w-full mb-3">
-                        <span id="currentTime" class="text-sm font-medium text-white w-12">00:00</span>
-                        <input type="range" id="progressSlider" min="0" max="100" value="0" class="w-full">
-                        <span id="duration" class="text-sm font-medium text-gray-400 w-12 text-right">00:00</span>
+                <!-- Custom Controls -->
+                <div class="video-controls z-20">
+                    <!-- Progress -->
+                    <div class="flex items-center gap-3 w-full">
+                        <span id="currentTime" class="text-xs font-medium text-white w-10 text-right">0:00</span>
+                        <div class="progress-bar-container" id="progressContainer">
+                            <div class="progress-bar" id="progressBar"></div>
+                            <div class="progress-thumb" id="progressThumb"></div>
+                        </div>
+                        <span id="duration" class="text-xs font-medium text-gray-300 w-10">0:00</span>
                     </div>
                     
-                    <!-- Controls Row -->
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-4 sm:gap-6">
-                            <button id="playPauseBtn" class="text-white hover:text-brand transition text-xl w-6">
-                                <i class="fas fa-play"></i>
+                    <!-- Buttons -->
+                    <div class="flex items-center justify-between mt-1">
+                        <div class="flex items-center gap-4">
+                            <button id="playPauseBtn" class="text-white hover:text-brand transition outline-none w-6">
+                                <i class="fas fa-play text-lg"></i>
                             </button>
-                            <button id="rewindBtn" class="text-white hover:text-brand transition text-lg hidden sm:block">
-                                <i class="fas fa-rotate-left"></i>
+                            <button id="rewindBtn" class="text-white hover:text-brand transition outline-none" title="-10 sek">
+                                <i class="fas fa-backward-step text-lg"></i>
                             </button>
-                            <button id="forwardBtn" class="text-white hover:text-brand transition text-lg hidden sm:block">
-                                <i class="fas fa-rotate-right"></i>
+                            <button id="forwardBtn" class="text-white hover:text-brand transition outline-none" title="+10 sek">
+                                <i class="fas fa-forward-step text-lg"></i>
                             </button>
-                            
                             <!-- Volume -->
-                            <div class="flex items-center gap-2 group/vol">
-                                <button id="muteBtn" class="text-white hover:text-brand transition text-lg w-6">
-                                    <i class="fas fa-volume-up"></i>
+                            <div class="flex items-center gap-2 group/vol relative">
+                                <button id="muteBtn" class="text-white hover:text-brand transition outline-none w-6">
+                                    <i class="fas fa-volume-up text-lg"></i>
                                 </button>
-                                <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="1" class="w-0 sm:w-20 opacity-0 group-hover/vol:w-20 group-hover/vol:opacity-100 transition-all duration-300 overflow-hidden">
+                                <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="1" class="w-20 h-1.5 accent-brand cursor-pointer opacity-0 group-hover/vol:opacity-100 transition-opacity">
                             </div>
                         </div>
-                        
-                        <div class="flex items-center gap-4 sm:gap-6">
-                            <div class="text-white text-sm font-bold bg-white/20 px-2 py-0.5 rounded">HD</div>
-                            <button id="fullscreenBtn" class="text-white hover:text-brand transition text-xl w-6">
-                                <i class="fas fa-expand"></i>
+                        <div class="flex items-center gap-4">
+                            <button class="text-white hover:text-brand transition outline-none text-sm font-medium">
+                                <i class="fas fa-cog"></i> Sifat
+                            </button>
+                            <button id="fullscreenBtn" class="text-white hover:text-brand transition outline-none w-6">
+                                <i class="fas fa-expand text-lg"></i>
                             </button>
                         </div>
                     </div>
                 </div>
+
+                <!-- Loader for video -->
+                <div id="videoLoader" class="absolute inset-0 flex items-center justify-center bg-black/80 z-30 hidden">
+                    <div class="loader"></div>
+                </div>
             </div>
-
-            <!-- Right Side: Movie Details & Downloads -->
-            <div class="w-full xl:w-[25%] h-[60vh] sm:h-[40vh] xl:h-full bg-dark-bg border-l border-dark-border flex flex-col p-6 overflow-y-auto custom-scrollbar">
-                
-                <div class="hidden xl:flex justify-end mb-6">
-                    <button onclick="closeModal()" class="w-10 h-10 bg-dark-card hover:bg-dark-border text-white rounded-full flex items-center justify-center transition-colors">
-                        <i class="fas fa-times"></i>
-                    </button>
+            
+            <!-- Download & Info Section with Dropdown Options -->
+            <div class="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between bg-dark-800 p-6 rounded-xl border border-gray-700">
+                <div class="mb-4 sm:mb-0">
+                    <h3 class="text-lg font-bold text-white mb-1">Film ma'lumotlari</h3>
+                    <p class="text-sm text-gray-400">Yuqori sifatdagi video fayl. AsilMedia.uz orqali taqdim etiladi.</p>
                 </div>
-
-                <h2 id="modalMovieTitle" class="text-2xl sm:text-3xl font-extrabold text-white mb-2 leading-tight">Film Nomi</h2>
-                <div class="flex items-center gap-3 mb-6 text-sm">
-                    <span class="text-brand font-bold"><i class="fas fa-star"></i> Yuqori reyting</span>
-                    <span class="text-gray-500">•</span>
-                    <span class="text-gray-400">AsilMedia Manbasi</span>
-                </div>
-
-                <p class="text-gray-400 text-sm leading-relaxed mb-8">
-                    Ushbu filmni yuqori sifatda, uzilishlarsiz onlayn tomosha qiling. Agar internetingiz tezligi past bo'lsa, videoni yuklab olishingizni tavsiya qilamiz.
-                </p>
-
-                <div class="mt-auto bg-dark-card rounded-xl p-5 border border-dark-border">
-                    <h3 class="text-white font-bold mb-4 flex items-center gap-2">
-                        <i class="fas fa-download text-brand"></i> Yuklab olish
-                    </h3>
-                    
-                    <div id="downloadOptions" class="flex flex-col gap-2">
-                        <!-- Skeletons for download buttons -->
-                        <div class="h-12 bg-dark-border rounded-lg animate-pulse"></div>
-                        <div class="h-12 bg-dark-border rounded-lg animate-pulse opacity-50"></div>
+                <div class="relative w-full sm:w-auto">
+                    <!-- Dropdown Options Menu -->
+                    <div id="downloadOptions" class="hidden absolute bottom-full left-0 w-full mb-2 bg-dark-900 border border-gray-600 rounded-lg shadow-2xl overflow-hidden z-50">
+                        <!-- Links will be added here by JS -->
                     </div>
+                    <!-- Main Button -->
+                    <button id="downloadDropdownBtn" class="w-full sm:w-auto bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-lg font-bold transition-colors flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-download"></i> <span id="downloadText">MP4 Yuklab olish</span> <i id="downloadIcon" class="fas fa-chevron-down text-sm ml-1"></i>
+                    </button>
                 </div>
             </div>
 
         </div>
     </div>
 
-    <!-- Toast Notifications -->
-    <div id="toastContainer" class="fixed bottom-5 right-5 z-[200] flex flex-col gap-3"></div>
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-[200] flex flex-col gap-2"></div>
 
     <script>
-        // API Configuration
+        // API Base URL (Haqiqiy AsilMedia API'ga ulanish)
         const API_BASE = 'https://asilmedia-api.vercel.app';
         
+        // State
+        let currentMovies = [];
+        let isPlayerActive = false;
+        let currentMp4Links = []; // Hozirgi tanlangan kinoning MP4 variantlari
+        let currentIframeUrl = null;
+
         // DOM Elements
         const moviesGrid = document.getElementById('moviesGrid');
-        const skeletonGrid = document.getElementById('skeletonGrid');
+        const loadingIndicator = document.getElementById('loadingIndicator');
         const noResults = document.getElementById('noResults');
         const sectionTitle = document.getElementById('sectionTitle');
         const searchInput = document.getElementById('searchInput');
         const mobileSearchInput = document.getElementById('mobileSearchInput');
         
-        // State
-        let currentMovies = [];
-        let searchTimeout = null;
-
-        // Initialize Page
+        const downloadDropdownBtn = document.getElementById('downloadDropdownBtn');
+        const downloadOptions = document.getElementById('downloadOptions');
+        const downloadText = document.getElementById('downloadText');
+        const downloadIcon = document.getElementById('downloadIcon');
+        
         window.onload = () => {
-            generateSkeletons();
-            // Default load: Tarjima filmlar
-            fetchMovies('tarjima', 'Eng so\'nggi tarjima filmlar');
+            // Bosh sahifada avtomatik qidiruv
+            searchMovies('2026');
             setupSearchListeners();
-            setupPlayer();
+            setupPlayerControls();
+            
+            // Dropdown uchun hodisalar (Events)
+            downloadDropdownBtn.addEventListener('click', (e) => {
+                if (currentMp4Links.length > 0) {
+                    downloadOptions.classList.toggle('hidden');
+                    e.stopPropagation(); // Oynaning boshqa joyiga bosilganda darhol yopilib ketmasligi uchun
+                } else if (currentIframeUrl) {
+                    window.open(currentIframeUrl, '_blank');
+                }
+            });
+
+            // Oynaning boshqa joyiga bosilganda dropdownni yopish
+            document.addEventListener('click', (e) => {
+                if (!downloadDropdownBtn.contains(e.target) && !downloadOptions.contains(e.target)) {
+                    downloadOptions.classList.add('hidden');
+                }
+            });
         };
 
-        // UI Helpers
         function showToast(message, type = 'info') {
             const toast = document.createElement('div');
-            const icon = type === 'error' ? 'fa-triangle-exclamation text-red-500' : 'fa-check-circle text-green-500';
-            
-            toast.className = `bg-dark-card border border-dark-border text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform transition-all duration-300 translate-x-12 opacity-0 font-medium text-sm`;
-            toast.innerHTML = `<i class="fas ${icon} text-lg"></i> ${message}`;
+            const bg = type === 'error' ? 'bg-red-600' : (type === 'success' ? 'bg-green-600' : 'bg-blue-600');
+            toast.className = `${bg} text-white px-4 py-2 rounded shadow-lg transform transition-all duration-300 translate-x-10 opacity-0 flex items-center gap-2`;
+            toast.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i> ${message}`;
             
             document.getElementById('toastContainer').appendChild(toast);
             
-            requestAnimationFrame(() => {
-                toast.classList.remove('translate-x-12', 'opacity-0');
-            });
-
+            setTimeout(() => toast.classList.remove('translate-x-10', 'opacity-0'), 10);
             setTimeout(() => {
-                toast.classList.add('translate-x-12', 'opacity-0');
+                toast.classList.add('translate-x-10', 'opacity-0');
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
 
-        function toggleMobileSearch() {
-            const ms = document.getElementById('mobileSearchContainer');
-            ms.classList.toggle('hidden');
-            if(!ms.classList.contains('hidden')) mobileSearchInput.focus();
-        }
-
-        function goHome() {
-            searchInput.value = '';
-            mobileSearchInput.value = '';
-            // Reset categories visually
-            document.querySelectorAll('.category-chip').forEach(c => {
-                c.className = "category-chip bg-dark-card text-gray-300 hover:text-white flex-shrink-0 px-6 py-2 rounded-full border border-dark-border font-medium text-sm transition-all";
-            });
-            document.querySelector('.category-chip').className = "category-chip active flex-shrink-0 px-6 py-2 rounded-full border border-dark-border font-medium text-sm transition-all";
-            
-            fetchMovies('tarjima', 'Eng so\'nggi tarjima filmlar');
-        }
-
-        // Search & Filter Logic
         function setupSearchListeners() {
             const handleSearch = (e) => {
                 if (e.key === 'Enter') {
                     const query = e.target.value.trim();
                     if (query) {
-                        fetchMovies(query, `Qidiruv natijasi: "${query}"`);
-                        if(window.innerWidth < 640) document.getElementById('mobileSearchContainer').classList.add('hidden');
+                        searchMovies(query);
+                        if(window.innerWidth < 640) document.getElementById('mobileSearch').classList.add('hidden');
                     }
                 }
             };
@@ -522,108 +461,111 @@
             mobileSearchInput.addEventListener('keypress', handleSearch);
         }
 
-        function setCategory(btnElement, category) {
-            // Update Active Styles
-            document.querySelectorAll('.category-chip').forEach(c => {
-                c.className = "category-chip bg-dark-card text-gray-300 hover:text-white flex-shrink-0 px-6 py-2 rounded-full border border-dark-border font-medium text-sm transition-all";
-            });
-            btnElement.className = "category-chip active flex-shrink-0 px-6 py-2 rounded-full border border-dark-border font-medium text-sm transition-all";
-            
-            // Search API
-            const query = category === 'Tarjima' ? 'tarjima' : `tarjima ${category}`;
-            fetchMovies(query, `Janr: ${category}`);
+        function toggleMobileSearch() {
+            const ms = document.getElementById('mobileSearch');
+            ms.classList.toggle('hidden');
+            if(!ms.classList.contains('hidden')) mobileSearchInput.focus();
         }
 
-        // Fetching & Rendering
-        function generateSkeletons() {
-            skeletonGrid.innerHTML = '';
-            for(let i=0; i<12; i++) {
-                skeletonGrid.innerHTML += `
-                    <div class="flex flex-col gap-2">
-                        <div class="w-full aspect-[2/3] bg-dark-card rounded-xl border border-dark-border animate-pulse-fast"></div>
-                        <div class="w-3/4 h-4 bg-dark-card rounded mt-1 animate-pulse-fast"></div>
-                        <div class="w-1/2 h-3 bg-dark-card rounded animate-pulse-fast"></div>
-                    </div>
-                `;
+        function goHome() {
+            searchInput.value = '';
+            mobileSearchInput.value = '';
+            searchMovies('2026');
+        }
+
+        function filterGenre(genre) {
+            if(genre === 'Barchasi') {
+                renderMovies(currentMovies);
+                sectionTitle.innerHTML = `<span class="w-1.5 h-8 bg-brand rounded-full inline-block"></span> Barcha natijalar`;
+                return;
+            }
+            sectionTitle.innerHTML = `<span class="w-1.5 h-8 bg-brand rounded-full inline-block"></span> Janr: ${genre}`;
+            const filtered = currentMovies.filter(m => {
+                const mGenre = (m.genre || m.category || '').toLowerCase();
+                return mGenre.includes(genre.toLowerCase());
+            });
+            
+            if (filtered.length === 0) {
+                moviesGrid.innerHTML = '';
+                noResults.classList.remove('hidden');
+            } else {
+                renderMovies(filtered);
             }
         }
 
-        async function fetchMovies(query, titleText) {
-            moviesGrid.classList.add('hidden');
+        async function searchMovies(query) {
+            moviesGrid.innerHTML = '';
             noResults.classList.add('hidden');
-            skeletonGrid.classList.remove('hidden');
-            
-            sectionTitle.innerHTML = `${titleText} <i class="fas fa-chevron-right text-brand text-sm mt-1"></i>`;
+            loadingIndicator.classList.remove('hidden');
+            loadingIndicator.classList.add('flex');
+            sectionTitle.innerHTML = `<span class="w-1.5 h-8 bg-brand rounded-full inline-block"></span> Natijalar: ${query}`;
 
             try {
+                // API ga murojaat qilish
                 const response = await fetch(`${API_BASE}/search?q=${encodeURIComponent(query)}`);
-                if (!response.ok) throw new Error('API xatosi');
+                if (!response.ok) throw new Error('API ulanishida xatolik');
                 
                 const data = await response.json();
-                let results = Array.isArray(data) ? data : (data.results || []);
                 
+                // Natijani massiv ekanligini tekshirish
+                let results = [];
+                if (Array.isArray(data)) results = data;
+                else if (data.results && Array.isArray(data.results)) results = data.results;
+
                 currentMovies = results;
-                renderMovies(results);
+                renderMovies(currentMovies);
             } catch (error) {
-                console.error("Fetch Error:", error);
-                skeletonGrid.classList.add('hidden');
+                console.error("API xatosi:", error);
+                loadingIndicator.classList.add('hidden');
+                loadingIndicator.classList.remove('flex');
                 noResults.classList.remove('hidden');
-                showToast("Ma'lumotlarni yuklashda xatolik yuz berdi", "error");
+                showToast("Server bilan ulanishda yoki qidiruvda xatolik!", "error");
             }
         }
 
         function renderMovies(movies) {
-            skeletonGrid.classList.add('hidden');
-            
+            loadingIndicator.classList.add('hidden');
+            loadingIndicator.classList.remove('flex');
+            moviesGrid.innerHTML = '';
+
             if(!movies || movies.length === 0) {
                 noResults.classList.remove('hidden');
                 return;
             }
+            noResults.classList.add('hidden');
 
-            moviesGrid.innerHTML = '';
-            moviesGrid.classList.remove('hidden');
-
-            movies.forEach((movie, index) => {
+            movies.forEach(movie => {
                 const title = movie.title || movie.name || 'Nomsiz Kino';
-                const poster = movie.poster || movie.image || movie.thumb || `https://placehold.co/400x600/18181b/E50914?text=${encodeURIComponent(title.substring(0, 15))}&font=Inter`;
-                const year = movie.year || '2026';
-                const rating = movie.rating || movie.imdb || '8.5';
+                const poster = movie.poster || movie.image || movie.thumb || `https://placehold.co/400x600/1a1a1a/e50914?text=${encodeURIComponent(title.substring(0, 20))}&font=montserrat`;
+                const year = movie.year || '';
+                const rating = movie.rating || movie.imdb || '';
                 const url = movie.url || movie.link || '#';
-                const genre = Array.isArray(movie.genre) ? movie.genre[0] : (movie.genre || movie.category || 'Tarjima');
+                const genre = Array.isArray(movie.genre) ? movie.genre.join(', ') : (movie.genre || movie.category || '');
 
                 const card = document.createElement('div');
-                // Apply stagger animation
-                card.className = `movie-card cursor-pointer animate-slide-up opacity-0`;
-                card.style.animationDelay = `${index * 0.05}s`;
-                card.style.animationFillMode = 'forwards';
-                card.onclick = () => openPlayerModal(title, url, poster);
+                card.className = 'movie-card relative bg-dark-800 rounded-lg overflow-hidden cursor-pointer group flex flex-col h-full';
+                card.onclick = () => openVideo(title, url, poster);
 
                 card.innerHTML = `
-                    <div class="relative w-full aspect-[2/3] rounded-xl overflow-hidden shadow-lg border border-dark-border/50">
-                        <img src="${poster}" alt="${title}" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://placehold.co/400x600/18181b/ffffff?text=Kino'">
+                    <div class="relative aspect-[2/3] w-full overflow-hidden">
+                        <img src="${poster}" alt="${title}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" onerror="this.src='https://placehold.co/400x600/1a1a1a/e50914?text=Kino'">
+                        ${rating ? `<div class="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-brand font-bold text-xs px-2 py-1 rounded border border-brand/30">
+                            <i class="fas fa-star text-[10px]"></i> ${rating}
+                        </div>` : ''}
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent h-24"></div>
                         
-                        <!-- Top Badges -->
-                        <div class="absolute top-2 left-2 flex gap-1 z-20">
-                            <span class="bg-brand text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">HD</span>
-                        </div>
-                        <div class="absolute top-2 right-2 z-20">
-                            <span class="bg-black/70 backdrop-blur text-yellow-500 text-[11px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1 border border-white/10">
-                                <i class="fas fa-star"></i> ${rating}
-                            </span>
-                        </div>
-
-                        <!-- Hover Overlay -->
-                        <div class="movie-info-overlay absolute inset-0 flex flex-col justify-end p-4 z-10">
-                            <div class="w-12 h-12 bg-brand text-white rounded-full flex items-center justify-center pl-1 mb-3 shadow-[0_0_15px_rgba(229,9,20,0.5)] transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                                <i class="fas fa-play text-lg"></i>
+                        <div class="play-overlay absolute inset-0 bg-black/40 flex items-center justify-center">
+                            <div class="w-14 h-14 bg-brand/90 rounded-full flex items-center justify-center text-white pl-1 shadow-[0_0_15px_rgba(229,9,20,0.6)]">
+                                <i class="fas fa-play text-xl"></i>
                             </div>
+                        </div>
+                    </div>
+                    <div class="p-3 flex-grow flex flex-col justify-between">
+                        <div>
                             <h3 class="font-bold text-white text-sm sm:text-base leading-tight mb-1 line-clamp-2">${title}</h3>
-                            <div class="flex items-center text-xs text-gray-300 gap-2 font-medium">
-                                <span>${year}</span>
-                                <span class="w-1 h-1 bg-gray-500 rounded-full"></span>
-                                <span class="truncate">${genre}</span>
-                            </div>
+                            ${genre ? `<p class="text-gray-400 text-xs truncate">${genre}</p>` : ''}
                         </div>
+                        ${year ? `<div class="text-xs font-medium text-brand mt-2">${year} yil</div>` : ''}
                     </div>
                 `;
                 moviesGrid.appendChild(card);
@@ -633,116 +575,135 @@
         const modal = document.getElementById('videoModal');
         const videoEl = document.getElementById('customVideo');
         const iframeEl = document.getElementById('iframePlayer');
-        const videoLoader = document.getElementById('videoLoader');
         const centerPlayBtn = document.getElementById('centerPlayBtn');
-        const videoControls = document.getElementById('videoControls');
-        const downloadContainer = document.getElementById('downloadOptions');
-        
-        // Custom Controls Elements
         const playPauseBtn = document.getElementById('playPauseBtn');
-        const progressSlider = document.getElementById('progressSlider');
-        const currentTimeEl = document.getElementById('currentTime');
-        const durationEl = document.getElementById('duration');
-        const volumeSlider = document.getElementById('volumeSlider');
-        const muteBtn = document.getElementById('muteBtn');
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
-        const playerWrapper = document.getElementById('playerWrapper');
+        const videoLoader = document.getElementById('videoLoader');
+        const videoControls = document.querySelector('.video-controls');
 
-        async function openPlayerModal(title, url, posterUrl) {
-            if (url === '#') return showToast("Kino havolasi mavjud emas", "error");
+        async function openVideo(title, url, posterUrl) {
+            if (url === '#') {
+                showToast("Kino havolasi mavjud emas", "error");
+                return;
+            }
             
-            // Reset UI
-            document.getElementById('modalMovieTitle').innerText = title;
-            document.body.style.overflow = 'hidden';
-            modal.classList.remove('hidden');
-            
+            // Elementlarni tozalash va tayyorlash
             videoEl.src = '';
             videoEl.poster = posterUrl || '';
             iframeEl.src = '';
-            
-            videoEl.classList.add('hidden');
             iframeEl.classList.add('hidden');
-            centerPlayBtn.classList.add('hidden');
-            videoControls.classList.add('hidden');
+            videoEl.classList.remove('hidden');
+            videoControls.classList.remove('hidden');
+            
+            document.getElementById('modalMovieTitle').innerText = title;
+            centerPlayBtn.style.display = 'none';
             videoLoader.classList.remove('hidden');
             
-            // Skeleton for downloads
-            downloadContainer.innerHTML = `
-                <div class="h-12 bg-dark-border rounded-lg animate-pulse-fast"></div>
-                <div class="h-12 bg-dark-border rounded-lg animate-pulse-fast opacity-50"></div>
-            `;
+            // Tugmani dastlabki holatga qaytarish
+            downloadDropdownBtn.disabled = true;
+            downloadText.innerText = "Kutilmoqda...";
+            downloadIcon.classList.add('hidden');
+            downloadOptions.classList.add('hidden');
+            
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
 
             try {
+                // API ga so'rov yuborish
                 const response = await fetch(`${API_BASE}/search?url=${encodeURIComponent(url)}`);
-                if(!response.ok) throw new Error('Video detallarini olishda xatolik');
+                if(!response.ok) throw new Error('Video API javobida xatolik');
                 
                 const data = await response.json();
                 
-                const iframeLink = data.player_iframes?.[0] || null;
-                const mp4Links = data.direct_mp4_links || [];
+                let iframeLink = null;
+                if (data.player_iframes && data.player_iframes.length > 0) {
+                    iframeLink = data.player_iframes[0];
+                }
                 
-                setupVideoPlayback(mp4Links, iframeLink);
+                // Ro'yxatni setupVideoSource ga uzatamiz
+                setupVideoSource(data.direct_mp4_links, iframeLink, title);
 
             } catch (err) {
-                console.error(err);
+                console.error("Video yuklashda xatolik:", err);
                 videoLoader.classList.add('hidden');
-                showToast("Videoni yuklashda xatolik", "error");
-                downloadContainer.innerHTML = `<p class="text-gray-500 text-sm italic">Yuklab olish imkonsiz.</p>`;
+                showToast("Video havolasini olishda xatolik yuz berdi", "error");
+                
+                downloadText.innerText = "Mavjud emas";
+                downloadIcon.classList.add('hidden');
+                downloadDropdownBtn.className = "w-full sm:w-auto bg-gray-600 text-white px-6 py-3 rounded-lg font-bold flex items-center justify-center gap-2 cursor-not-allowed";
             }
         }
 
-        function setupVideoPlayback(mp4Links, iframeUrl) {
+        function setupVideoSource(mp4Links, iframeUrl, title) {
             videoLoader.classList.add('hidden');
-            downloadContainer.innerHTML = '';
+            downloadOptions.innerHTML = '';
+            
+            currentMp4Links = mp4Links || [];
+            currentIframeUrl = iframeUrl;
 
-            if (mp4Links.length > 0) {
-                // MP4 native player mode
+            if (currentMp4Links.length > 0) {
+                // MP4 Player sozlamalari (Playerda ko'rish uchun eng sifatlisini tanlash)
+                let bestMp4 = currentMp4Links.find(link => link.toLowerCase().includes('full hd')) || 
+                              currentMp4Links.find(link => link.toLowerCase().includes('hd')) || 
+                              currentMp4Links[0];
+
                 videoEl.classList.remove('hidden');
+                iframeEl.classList.add('hidden');
                 videoControls.classList.remove('hidden');
-                centerPlayBtn.classList.remove('hidden');
+                centerPlayBtn.style.display = 'flex';
                 
-                // Auto select best quality for playing
-                const bestUrl = mp4Links.find(l => l.toLowerCase().includes('1080p') || l.toLowerCase().includes('full hd')) || 
-                                mp4Links.find(l => l.toLowerCase().includes('720p') || l.toLowerCase().includes('hd')) || 
-                                mp4Links[0];
-                
-                videoEl.src = bestUrl;
+                videoEl.src = bestMp4;
 
-                // Render Download Buttons
-                mp4Links.forEach(link => {
-                    let quality = "Standart (480p)";
-                    const linkLower = link.toLowerCase();
-                    if(linkLower.includes('1080p') || linkLower.includes('full hd')) quality = "Ultra HD (1080p)";
-                    else if(linkLower.includes('720p') || linkLower.includes('hd')) quality = "Yuqori (720p)";
+                // Yuklab olish tugmasini faollashtirish
+                downloadText.innerText = "MP4 Yuklab olish";
+                downloadIcon.classList.remove('hidden');
+                downloadDropdownBtn.className = "w-full sm:w-auto bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-lg font-bold transition-colors flex items-center justify-center gap-2 shadow-lg";
+                downloadDropdownBtn.disabled = false;
 
-                    const btn = document.createElement('a');
-                    btn.href = link;
-                    btn.target = "_blank";
-                    btn.className = "flex items-center justify-between bg-dark-bg hover:bg-dark-hover border border-dark-border p-3 rounded-lg transition-colors group";
-                    btn.innerHTML = `
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-file-video text-gray-500 group-hover:text-brand transition-colors"></i>
-                            <span class="text-sm font-medium text-gray-200">${quality}</span>
-                        </div>
-                        <i class="fas fa-download text-brand opacity-70 group-hover:opacity-100"></i>
-                    `;
-                    downloadContainer.appendChild(btn);
+                // Yuklab olish variantlarini shakllantirish
+                currentMp4Links.forEach(link => {
+                    let quality = "Standart (360p)";
+                    const lowerLink = link.toLowerCase();
+                    if (lowerLink.includes('full hd') || lowerLink.includes('1080p')) quality = 'Full HD (1080p)';
+                    else if (lowerLink.includes('720p') || lowerLink.includes('hd')) quality = 'HD (720p)';
+                    else if (lowerLink.includes('480p')) quality = 'SD (480p)';
+
+                    const a = document.createElement('a');
+                    a.href = link;
+                    a.target = "_blank"; // Boshqa domendan (CORS) muammosiz ochilishi uchun
+                    a.className = 'block px-4 py-3 text-sm font-medium text-gray-200 hover:bg-brand hover:text-white transition-colors border-b border-gray-700 last:border-0 flex items-center justify-between group';
+                    a.innerHTML = `<span><i class="fas fa-video mr-2 opacity-50 group-hover:opacity-100"></i> ${quality}</span> <i class="fas fa-download"></i>`;
+                    
+                    // Tanlangan sifat ustiga bosilganda oyna yopilishi uchun
+                    a.addEventListener('click', () => {
+                        downloadOptions.classList.add('hidden');
+                    });
+
+                    downloadOptions.appendChild(a);
                 });
 
             } else if (iframeUrl) {
-                // Iframe mode (no custom controls)
+                // Iframe Player sozlamalari
+                videoEl.classList.add('hidden');
                 iframeEl.classList.remove('hidden');
+                videoControls.classList.add('hidden');
+                centerPlayBtn.style.display = 'none';
+                videoEl.pause();
+                
                 iframeEl.src = iframeUrl;
                 
-                downloadContainer.innerHTML = `
-                    <a href="${iframeUrl}" target="_blank" class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold p-3 rounded-lg transition-colors shadow-lg">
-                        <i class="fas fa-external-link-alt"></i> Manba saytdan ko'rish
-                    </a>
-                    <p class="text-xs text-gray-500 mt-2 text-center">Ushbu video uchun to'g'ridan-to'g'ri MP4 havola topilmadi.</p>
-                `;
+                showToast("Faqat tashqi player orqali ko'rish mavjud", "info");
+                
+                // Yuklab olish tugmasini iframe sahifasiga yo'naltiruvchi qilish
+                downloadText.innerText = "Saytdan ko'rish";
+                downloadIcon.classList.add('hidden');
+                downloadDropdownBtn.className = "w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg font-bold transition-colors flex items-center justify-center gap-2 shadow-lg";
+                downloadDropdownBtn.disabled = false;
             } else {
-                showToast("Video manbasi topilmadi", "error");
-                downloadContainer.innerHTML = `<p class="text-gray-500 text-sm">Hech narsa topilmadi.</p>`;
+                showToast("Hech qanday video topilmadi", "error");
+                downloadText.innerText = "Mavjud emas";
+                downloadIcon.classList.add('hidden');
+                downloadDropdownBtn.className = "w-full sm:w-auto bg-gray-600 text-white px-6 py-3 rounded-lg font-bold flex items-center justify-center gap-2 cursor-not-allowed";
+                downloadDropdownBtn.disabled = true;
             }
         }
 
@@ -752,112 +713,128 @@
             videoEl.pause();
             videoEl.src = '';
             iframeEl.src = '';
+            isPlayerActive = false;
+            downloadOptions.classList.add('hidden'); // Dropdown ochiq qolgan bo'lsa yopish
         }
 
-        // Custom Player Controls Logic
-        function setupPlayer() {
+        function setupPlayerControls() {
+            const progressBar = document.getElementById('progressBar');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressThumb = document.getElementById('progressThumb');
+            const currentTimeEl = document.getElementById('currentTime');
+            const durationEl = document.getElementById('duration');
+            const muteBtn = document.getElementById('muteBtn');
+            const volumeSlider = document.getElementById('volumeSlider');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const playerWrapper = document.getElementById('playerWrapper');
+            const rewindBtn = document.getElementById('rewindBtn');
+            const forwardBtn = document.getElementById('forwardBtn');
+
             function togglePlay() {
-                if(videoEl.paused || videoEl.ended) {
+                if(videoEl.classList.contains('hidden')) return; // Iframe ochiq bo'lsa ishlamaydi
+                
+                if (videoEl.paused || videoEl.ended) {
                     videoEl.play();
-                    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                    centerPlayBtn.classList.add('hidden');
+                    centerPlayBtn.style.display = 'none';
+                    playPauseBtn.innerHTML = '<i class="fas fa-pause text-lg"></i>';
                 } else {
                     videoEl.pause();
-                    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-                    centerPlayBtn.classList.remove('hidden');
+                    centerPlayBtn.style.display = 'flex';
+                    playPauseBtn.innerHTML = '<i class="fas fa-play text-lg"></i>';
                 }
             }
 
-            playPauseBtn.addEventListener('click', togglePlay);
             centerPlayBtn.addEventListener('click', togglePlay);
+            playPauseBtn.addEventListener('click', togglePlay);
             videoEl.addEventListener('click', togglePlay);
 
-            function formatTime(sec) {
-                if(isNaN(sec)) return "00:00";
-                const minutes = Math.floor(sec / 60);
-                const seconds = Math.floor(sec % 60);
-                return `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            function formatTime(seconds) {
+                if(isNaN(seconds)) return "0:00";
+                seconds = Math.floor(seconds);
+                const m = Math.floor(seconds / 60);
+                const s = Math.floor(seconds % 60);
+                return `${m}:${s < 10 ? '0' : ''}${s}`;
             }
 
             videoEl.addEventListener('loadedmetadata', () => {
                 durationEl.textContent = formatTime(videoEl.duration);
-                progressSlider.max = videoEl.duration;
             });
 
             videoEl.addEventListener('timeupdate', () => {
-                if(!progressSlider.matches(':active')) { // Don't update if user is dragging
-                    progressSlider.value = videoEl.currentTime;
-                }
+                if(isNaN(videoEl.duration)) return;
+                const percent = (videoEl.currentTime / videoEl.duration) * 100;
+                progressBar.style.width = `${percent}%`;
+                progressThumb.style.left = `${percent}%`;
                 currentTimeEl.textContent = formatTime(videoEl.currentTime);
-                
-                // Calculate gradient for range slider
-                const val = (videoEl.currentTime / videoEl.duration) * 100;
-                progressSlider.style.background = `linear-gradient(to right, #E50914 ${val}%, rgba(255,255,255,0.2) ${val}%)`;
             });
 
-            progressSlider.addEventListener('input', (e) => {
-                videoEl.currentTime = e.target.value;
-                const val = (e.target.value / videoEl.duration) * 100;
-                progressSlider.style.background = `linear-gradient(to right, #E50914 ${val}%, rgba(255,255,255,0.2) ${val}%)`;
+            progressContainer.addEventListener('click', (e) => {
+                const rect = progressContainer.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width;
+                videoEl.currentTime = pos * videoEl.duration;
             });
 
-            document.getElementById('rewindBtn').addEventListener('click', () => videoEl.currentTime -= 10);
-            document.getElementById('forwardBtn').addEventListener('click', () => videoEl.currentTime += 10);
-
-            // Volume
-            function updateVolume() {
-                if(videoEl.muted || videoEl.volume === 0) {
-                    muteBtn.innerHTML = '<i class="fas fa-volume-mute text-red-500"></i>';
-                } else if(videoEl.volume < 0.5) {
-                    muteBtn.innerHTML = '<i class="fas fa-volume-down"></i>';
-                } else {
-                    muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-                }
-                const val = videoEl.volume * 100;
-                volumeSlider.style.background = `linear-gradient(to right, #fff ${val}%, rgba(255,255,255,0.2) ${val}%)`;
-            }
+            rewindBtn.addEventListener('click', () => videoEl.currentTime = Math.max(0, videoEl.currentTime - 10));
+            forwardBtn.addEventListener('click', () => videoEl.currentTime = Math.min(videoEl.duration, videoEl.currentTime + 10));
 
             muteBtn.addEventListener('click', () => {
                 videoEl.muted = !videoEl.muted;
-                if(!videoEl.muted && videoEl.volume === 0) videoEl.volume = 1;
-                volumeSlider.value = videoEl.muted ? 0 : videoEl.volume;
-                updateVolume();
+                updateVolumeIcon();
             });
 
             volumeSlider.addEventListener('input', (e) => {
                 videoEl.volume = e.target.value;
-                videoEl.muted = e.target.value == 0;
-                updateVolume();
+                videoEl.muted = e.target.value === '0';
+                updateVolumeIcon();
             });
-            // Initial volume style
-            volumeSlider.style.background = `linear-gradient(to right, #fff 100%, rgba(255,255,255,0.2) 100%)`;
 
-            // Fullscreen
+            function updateVolumeIcon() {
+                if (videoEl.muted || videoEl.volume == 0) {
+                    muteBtn.innerHTML = '<i class="fas fa-volume-mute text-lg"></i>';
+                    volumeSlider.value = 0;
+                } else if (videoEl.volume < 0.5) {
+                    muteBtn.innerHTML = '<i class="fas fa-volume-down text-lg"></i>';
+                } else {
+                    muteBtn.innerHTML = '<i class="fas fa-volume-up text-lg"></i>';
+                }
+            }
+
             fullscreenBtn.addEventListener('click', () => {
                 if (!document.fullscreenElement) {
-                    if(playerWrapper.requestFullscreen) playerWrapper.requestFullscreen();
-                    else if (playerWrapper.webkitRequestFullscreen) playerWrapper.webkitRequestFullscreen();
-                    fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+                    if(playerWrapper.requestFullscreen) {
+                        playerWrapper.requestFullscreen();
+                    } else if (playerWrapper.webkitRequestFullscreen) {
+                        playerWrapper.webkitRequestFullscreen();
+                    }
                 } else {
-                    if (document.exitFullscreen) document.exitFullscreen();
-                    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-                    fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    }
                 }
             });
+
             videoEl.addEventListener('dblclick', () => fullscreenBtn.click());
 
             videoEl.addEventListener('ended', () => {
-                centerPlayBtn.classList.remove('hidden');
-                centerPlayBtn.innerHTML = `<div class="w-20 h-20 bg-brand/90 backdrop-blur rounded-full flex items-center justify-center text-white shadow-[0_0_30px_rgba(229,9,20,0.5)]"><i class="fas fa-rotate-left text-3xl"></i></div>`;
-                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                centerPlayBtn.style.display = 'flex';
+                playPauseBtn.innerHTML = '<i class="fas fa-play text-lg"></i>';
+                centerPlayBtn.innerHTML = '<div class="w-20 h-20 bg-brand/90 rounded-full flex items-center justify-center text-white shadow-[0_0_20px_rgba(229,9,20,0.6)]"><i class="fas fa-redo text-3xl"></i></div>';
+            });
+            
+            videoEl.addEventListener('pause', () => {
+                if(videoEl.currentTime < videoEl.duration) {
+                     centerPlayBtn.innerHTML = '<div class="w-20 h-20 bg-brand/90 rounded-full flex items-center justify-center text-white pl-1.5 shadow-[0_0_20px_rgba(229,9,20,0.6)] transform group-hover:scale-110 transition"><i class="fas fa-play text-3xl"></i></div>';
+                }
             });
         }
-
-        // Close modal on Escape
+        
         document.addEventListener('keydown', (e) => {
-            if(e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+            if(e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                closeModal();
+            }
         });
-
     </script>
 </body>
 </html>
